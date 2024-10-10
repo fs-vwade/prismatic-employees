@@ -17,5 +17,13 @@ POST  {{base_url}}/employees
 Content-Type: application/json
 
 {
+	"name": "Gnossi"
+}
+
+###
+PUT  {{base_url}}/employees/16
+Content-Type: application/json
+
+{
 	"name": "Parhlep"
 }

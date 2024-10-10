@@ -43,6 +43,10 @@ app.get("/employees", async (req, res) => {
 		});
 	}
 });
+/**
+ * path: /employees
+ * response: Returns the newly created employee
+ */
 app.post(`/employees`, async (req, res) => {
 	try {
 		// TODO - figuire out how to do a POST request...
@@ -90,6 +94,40 @@ app.get("/employees/:id", async (req, res) => {
 		await prisma.$disconnect();
 		res.status(500).json({
 			error: "Something bad happened while fetching our employees...",
+		});
+	}
+});
+/**
+ * path: /employees/id
+ * response: Returns the employee with the given id
+ */
+app.put("/employees/:id", async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { name } = req.body;
+
+		const exists = await prisma.employee.findUnique({
+			where: { id: Number(id) },
+		});
+
+		if (exists && name) {
+			const employee = await prisma.employee.update({
+				where: { id: Number(id) },
+				data: { name },
+			});
+			res.json(employee);
+		} else {
+			if (!exists) {
+				res.status(404).send(`Could not find any employee with ID #${id}.`);
+			} else if (!name) {
+				res.status(404).send(`Ensure request {body} contains a {name}.`);
+			}
+		}
+	} catch (error) {
+		console.error(error);
+		await prisma.$disconnect();
+		res.status(500).json({
+			error: "Something bad happened while updating the employee... :(",
 		});
 	}
 });
