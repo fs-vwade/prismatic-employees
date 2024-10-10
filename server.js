@@ -6,7 +6,7 @@ const employees = require("./employees");
 
 // method, path, handler
 app.get("/", (req, res) => {
-	res.send("Hello employees!");
+	res.send("Welcome to the Prismatic Employees API.");
 });
 app.get("/employees", (req, res) => {
 	res.json(employees);
