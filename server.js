@@ -36,19 +36,31 @@ app.get("/employees", async (req, res) => {
 	try {
 		res.json(await prisma.employee.findMany());
 	} catch (error) {
+		console.error(error);
 		await prisma.$disconnect();
 		res.status(500).json({
 			error: "Something bad happened while fetching our employees...",
 		});
 	}
 });
-app.post(`/employees`, async () => {
+app.post(`/employees`, async (req, res) => {
 	try {
 		// TODO - figuire out how to do a POST request...
+		const { name } = req.body;
+
+		if (name) {
+			const employee = await prisma.employee.create({ data: { name } });
+			res.status(201).json(employee);
+		} else {
+			res
+				.status(400)
+				.send("Ensure the {body} of your request includes a {name} parameter.");
+		}
 	} catch (error) {
+		console.error(error);
 		await prisma.$disconnect();
 		res.status(500).json({
-			error: "Something bad happened while fetching our employees...",
+			error: "Something bad happened while creating a new employee... :(",
 		});
 	}
 });
@@ -74,6 +86,7 @@ app.get("/employees/:id", async (req, res) => {
 			res.status(404).send(`Could not find any employee with ID #${id}.`);
 		}
 	} catch (error) {
+		console.error(error);
 		await prisma.$disconnect();
 		res.status(500).json({
 			error: "Something bad happened while fetching our employees...",

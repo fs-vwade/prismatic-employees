@@ -8,4 +8,14 @@ GET {{base_url}}/employees
 
 ### 🍍
 @id=random
+
 GET {{base_url}}/employees/{{id}}
+
+
+###
+POST  {{base_url}}/employees
+Content-Type: application/json
+
+{
+	"name": "Parhlep"
+}
