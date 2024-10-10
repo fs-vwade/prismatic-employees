@@ -9,6 +9,14 @@ const prisma = new PrismaClient();
 // create constants
 const PORT = 3000;
 
+// static functions
+function random_choice(input) {
+	const array = Array.from(input); // 🍍 typing
+	const random_index = Math.floor(Math.random() * array.length);
+
+	return array[random_index];
+}
+
 // create middleware to parse incoming JSON payloads
 app.use(express.json());
 
@@ -22,36 +30,54 @@ app.get("/", (req, res) => {
 });
 /**
  *	path: /employees
- *	return
+ *	response: Return a list of all employees
  */
 app.get("/employees", async (req, res) => {
 	try {
 		res.json(await prisma.employee.findMany());
 	} catch (error) {
-		res
-			.status(500)
-			.send("Something bad happened while fetching our employees...");
+		await prisma.$disconnect();
+		res.status(500).json({
+			error: "Something bad happened while fetching our employees...",
+		});
 	}
 });
+app.post(`/employees`, async () => {
+	try {
+		// TODO - figuire out how to do a POST request...
+	} catch (error) {
+		await prisma.$disconnect();
+		res.status(500).json({
+			error: "Something bad happened while fetching our employees...",
+		});
+	}
+});
+/**
+ * path: /employees/id
+ * response: Returns the employee with the given id
+ */
 app.get("/employees/:id", async (req, res) => {
 	try {
 		const { id } = req.params;
-		const employees = await prisma.employee.findMany();
 
 		if (id === "random") {
-			const rval = Math.floor(Math.random() * employees.length);
-			const employee = employees.filter((e) => e.id == rval)[0];
-			res.json(employee);
-		} else if (0 <= +id && +id < employees.length) {
-			const employee = employees.filter((e) => e.id == +id)[0];
+			return res.json(random_choice(await prisma.employee.findMany()));
+		}
+
+		const employee = await prisma.employee.findUnique({
+			where: { id: Number(id) },
+		});
+
+		if (employee) {
 			res.json(employee);
 		} else {
-			res.status(404).send("No employee exists with that ID.");
+			res.status(404).send(`Could not find any employee with ID #${id}.`);
 		}
 	} catch (error) {
-		res
-			.status(500)
-			.send("Something bad happened while fetching our employees...");
+		await prisma.$disconnect();
+		res.status(500).json({
+			error: "Something bad happened while fetching our employees...",
+		});
 	}
 });
 //app.get("/", (req, res)=>{})

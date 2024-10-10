@@ -2,3 +2,10 @@
 
 ###
 GET {{base_url}}/
+
+###
+GET {{base_url}}/employees
+
+### 🍍
+@id=random
+GET {{base_url}}/employees/{{id}}
