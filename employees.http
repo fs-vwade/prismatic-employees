@@ -21,9 +21,13 @@ Content-Type: application/json
 }
 
 ###
-PUT  {{base_url}}/employees/16
+PUT  {{base_url}}/employees/20
 Content-Type: application/json
 
 {
 	"name": "Parhlep"
 }
+
+###
+DELETE   {{base_url}}/employees/20
+Content-Type: application/json

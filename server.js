@@ -131,7 +131,30 @@ app.put("/employees/:id", async (req, res) => {
 		});
 	}
 });
-//app.get("/", (req, res)=>{})
+app.delete(`/employees/:id`, async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const exists = await prisma.employee.findUnique({
+			where: { id: Number(id) },
+		});
+
+		if (exists) {
+			await prisma.employee.delete({
+				where: { id: Number(id) },
+			});
+			res.status(201).send();
+		} else {
+			res.status(400).send("That employee ID does not exist.");
+		}
+	} catch (error) {
+		console.error(error);
+		await prisma.$disconnect();
+		res.status(500).json({
+			error: "Something bad happened while deleting the employee... :(",
+		});
+	}
+});
 
 // listen
 app.listen(PORT);
